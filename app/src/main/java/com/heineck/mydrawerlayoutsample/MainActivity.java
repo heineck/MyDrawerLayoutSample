@@ -11,38 +11,17 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 
-public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
-
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
-    SectionsPagerAdapter mSectionsPagerAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    ViewPager mViewPager;
+public class MainActivity extends ActionBarActivity implements ActionBar.TabListener, DrawerDatasource {
 
     private ArrayList<String> mPlanetTitles;
     private DrawerLayout mDrawerLayout;
@@ -50,6 +29,14 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     private ActionBarDrawerToggle mDrawerToggle;
     private String mActivityTitle;
+
+    private OnDrawerItemListener planetsListener = null;
+    private OnDrawerItemListener carsListener = null;
+
+    private FragmentManager fm = getSupportFragmentManager();
+
+    private PlanetsFragment planetsFragment = null;
+    private CarsFragment carsFragment = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,35 +47,22 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        planetsFragment = PlanetsFragment.newInstance("p1", "p2", MainActivity.this);
+        planetsListener = planetsFragment;
 
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+        Locale l = Locale.getDefault();
+        actionBar.addTab(
+                actionBar.newTab()
+                        .setText(getString(R.string.title_section1).toUpperCase(l))
+                        .setTabListener(this));
+        actionBar.addTab(
+                actionBar.newTab()
+                        .setText(getString(R.string.title_section2).toUpperCase(l))
+        .setTabListener(this));
 
-        // When swiping between different sections, select the corresponding
-        // tab. We can also use ActionBar.Tab#select() to do this if we have
-        // a reference to the Tab.
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                actionBar.setSelectedNavigationItem(position);
-            }
-        });
-
-        // For each of the sections in the app, add a tab to the action bar.
-        for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-            // Create a tab with text corresponding to the page title defined by
-            // the adapter. Also specify this Activity object, which implements
-            // the TabListener interface, as the callback (listener) for when
-            // this tab is selected.
-            actionBar.addTab(
-                    actionBar.newTab()
-                            .setText(mSectionsPagerAdapter.getPageTitle(i))
-                            .setTabListener(this));
-        }
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.add(R.id.content_fragment, planetsFragment, PlanetsFragment.TAG_NAME);
+        ft.commit();
 
 
         mPlanetTitles = new ArrayList<>();
@@ -105,7 +79,22 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d("listview menu", "clicked on item " + position);
+                Log.d("listview menu", "clicked on item position " + position);
+
+                String data = parent.getAdapter().getItem(position).toString();
+
+                Log.d("listview menu", "clicked on item data - " + data);
+
+                if (planetsListener != null) {
+                    Log.d("listview menu", "planets delegate succesfull");
+                    planetsListener.onItemClick(position, data);
+                }
+
+                if (carsListener != null) {
+                    Log.d("listview menu", "planets delegate succesfull");
+                    carsListener.onItemClick(position, data);
+                }
+
                 mDrawerLayout.closeDrawer(mDrawerList);
             }
         });
@@ -181,9 +170,38 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        // When the given tab is selected, switch to the corresponding page in
-        // the ViewPager.
-        mViewPager.setCurrentItem(tab.getPosition());
+
+        Log.d("MainActivity", "[onTabSelected] - INIT");
+
+        FragmentTransaction ft = fm.beginTransaction();
+
+        hideFragment(ft, planetsFragment);
+        hideFragment(ft, carsFragment);
+
+        int pos = tab.getPosition();
+
+        Log.d("MainActivity", "[onTabSelected] - position: " + pos);
+
+        switch (pos) {
+
+            case 0://planets
+                ft.show(planetsFragment);
+                break;
+            case 1://cars
+                if (carsFragment == null) {
+                    carsFragment = CarsFragment.newInstance("p1", "p2", MainActivity.this);
+                    carsListener = carsFragment;
+                    ft.add(R.id.content_fragment, carsFragment, CarsFragment.TAG_NAME);
+                }
+
+                ft.show(carsFragment);
+
+                break;
+
+        }
+
+        ft.commit();
+
     }
 
     @Override
@@ -194,75 +212,23 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
-        }
-
-        @Override
-        public int getCount() {
-            // Show 3 total pages.
-            return 3;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            Locale l = Locale.getDefault();
-            switch (position) {
-                case 0:
-                    return getString(R.string.title_section1).toUpperCase(l);
-                case 1:
-                    return getString(R.string.title_section2).toUpperCase(l);
-                case 2:
-                    return getString(R.string.title_section3).toUpperCase(l);
-            }
-            return null;
-        }
+    @Override
+    public void setDatasource(ArrayList adapter) {
+        ArrayAdapter adp = new ArrayAdapter<String>(this,
+                R.layout.drawer_list_item, adapter);
+        mDrawerList.setAdapter(adp);
+        adp.notifyDataSetChanged();
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
+    /**Hides the fragment safely.
+     * This method don't commit the transaction
+     *
+     * @param ft Fragment transaction
+     * @param fr Fragment
      */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
-        }
+    private void hideFragment(FragmentTransaction ft, Fragment fr) {
+        if (fr != null)
+            ft.hide(fr);
     }
 
 }

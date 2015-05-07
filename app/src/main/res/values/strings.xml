@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">MyDrawerLayoutSample</string>
 
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
+    <string name="title_section1">Planets</string>
+    <string name="title_section2">Cars</string>
     <string name="title_section3">Section 3</string>
 
     <string name="hello_world">Hello world!</string>
@@ -10,5 +10,11 @@
     <string name="action_settings">Settings</string>
     <string name="ns_menu_open">Menu Opened</string>
     <string name="ns_menu_close">Menu closed</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_planet_fragment">Hello planet fragment</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_car_fragment">Hello car fragment</string>
 
 </resources>
