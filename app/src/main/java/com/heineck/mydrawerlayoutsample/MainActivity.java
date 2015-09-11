@@ -23,7 +23,7 @@ import android.widget.ListView;
 
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener, DrawerDatasource {
 
-    private ArrayList<String> mPlanetTitles;
+    private ArrayList<CategoryItem> mPlanetTitles;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
 
@@ -58,28 +58,34 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         actionBar.addTab(
                 actionBar.newTab()
                         .setText(getString(R.string.title_section2).toUpperCase(l))
-        .setTabListener(this));
+                        .setTabListener(this));
 
         FragmentTransaction ft = fm.beginTransaction();
         ft.add(R.id.content_fragment, planetsFragment, PlanetsFragment.TAG_NAME);
         ft.commit();
 
 
-        mPlanetTitles = new ArrayList<>();
-        mPlanetTitles.add("Mercurio");
-        mPlanetTitles.add("Venus");
-        mPlanetTitles.add("Terra");
-        mPlanetTitles.add("Marte");
+        mPlanetTitles = new ArrayList<CategoryItem>();
+
+        CategoryItem item0 = new CategoryItem(0,"Mercurio");
+        CategoryItem item1 = new CategoryItem(0,"Venus");
+        CategoryItem item2 = new CategoryItem(0,"Terra");
+        CategoryItem item3 = new CategoryItem(0,"Marte");
+        mPlanetTitles.add(item0);
+        mPlanetTitles.add(item1);
+        mPlanetTitles.add(item2);
+        mPlanetTitles.add(item3);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         // Set the adapter for the list view
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, mPlanetTitles));
+        mDrawerList.setAdapter(new MenuArrayAdapter(this, mPlanetTitles));
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d("listview menu", "clicked on item position " + position);
+
+                ((MenuArrayAdapter)parent.getAdapter()).setSelectedPosition(position);
 
                 String data = parent.getAdapter().getItem(position).toString();
 
@@ -214,8 +220,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     @Override
     public void setDatasource(ArrayList adapter) {
-        ArrayAdapter adp = new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, adapter);
+        MenuArrayAdapter adp = new MenuArrayAdapter(this, adapter);
         mDrawerList.setAdapter(adp);
         adp.notifyDataSetChanged();
     }

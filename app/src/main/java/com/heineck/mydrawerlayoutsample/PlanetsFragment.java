@@ -105,11 +105,16 @@ public class PlanetsFragment extends Fragment implements OnDrawerItemListener {
 
         Log.d("Planets updateMenu", "INIT");
 
-        ArrayList<String> data = new ArrayList<String>();
-        data.add("Mercurio");
-        data.add("Venus");
-        data.add("Terra");
-        data.add("Marte");
+        CategoryItem item0 = new CategoryItem(0,"Mercurio");
+        CategoryItem item1 = new CategoryItem(0,"Venus");
+        CategoryItem item2 = new CategoryItem(0,"Terra");
+        CategoryItem item3 = new CategoryItem(0,"Marte");
+
+        ArrayList<CategoryItem> data = new ArrayList<CategoryItem>();
+        data.add(item0);
+        data.add(item1);
+        data.add(item2);
+        data.add(item3);
 
         if (menuDatasource != null) {
 

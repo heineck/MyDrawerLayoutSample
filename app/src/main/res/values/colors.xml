@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+        Check Android Theme colors for color reference:
+        https://developer.android.com/training/material/images/ThemeColors.png
+        Refer also to Color palette for the UI colors you should use:
+        http://www.google.com/design/spec/style/color.html#color-ui-color-palette
+    -->
+
+    <color name="myPrimaryColor">#416CCC</color>
+    <color name="myPrimaryDarkColor">#3F51B5</color>
+    <color name="myAccentColor">#F0FFFF</color>
+    <color name="myDrawerBackground">#F2F2F2</color>
+    <color name="myWindowBackground">#DEDEDE</color>
+    <color name="myTextPrimaryColor">#F0FFFF</color>
+    <color name="mySelectedTextPrimaryColor">#FFFFFF</color>
+    <color name="myNavigationColor">#000000</color>
+    <color name="tabLayoutBackgroundColor">#416CCC</color>
+    <color name="accent">#229888</color>
+    <!-- this is needed as preference_category_material layout uses this color as the text color -->
+    <color name="preference_fallback_accent_color">@color/accent</color>
+
+    <color name="selected_gray">#ffdbdbdb</color>
+    <color name="app_text_color">#7F7F7F</color>
+    <color name="white_color">#FFFFFF</color>
+    <color name="red_color">#229888</color>
+
+</resources>

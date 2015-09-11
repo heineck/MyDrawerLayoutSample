@@ -2,10 +2,13 @@ package com.heineck.mydrawerlayoutsample;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -102,10 +105,14 @@ public class CarsFragment extends Fragment implements OnDrawerItemListener {
 
         Log.d("Cars updateMenu", "INIT");
 
-        ArrayList<String> data = new ArrayList<String>();
-        data.add("Toyota");
-        data.add("Honda");
-        data.add("Mitsubishi");
+        CategoryItem item0 = new CategoryItem(0,"Toyota");
+        CategoryItem item1 = new CategoryItem(0,"Hoda");
+        CategoryItem item2 = new CategoryItem(0,"Mitsubishi");
+
+        ArrayList<CategoryItem> data = new ArrayList<CategoryItem>();
+        data.add(item0);
+        data.add(item1);
+        data.add(item2);
 
         if (menuDatasource != null) {
 
